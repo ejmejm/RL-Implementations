@@ -5,7 +5,7 @@ import multiprocessing
 
 class MemoryBuffer():
     def __init__(self, max_size=1e6):
-        self.max_size = max_size
+        self.max_size = int(max_size)
         self.rollouts = []
         self.rollout_idx = -1
     

@@ -1,5 +1,5 @@
 import tensorflow as tf
-from utils import reshape_train_var
+from utils import reshape_train_var, gaussian_likelihood
 import numpy as np
 
 class VPGTrainer():
@@ -72,20 +72,22 @@ class VPGTrainer():
         """
         Creates a function for vanilla policy training with a continuous action space
         """
-        self.act_holders = tf.placeholder(tf.float64, shape=[None, self.out_op.shape[1].value])
-        self.reward_holders = tf.placeholder(tf.float64, shape=[None])
+        self.act_holders = tf.placeholder(tf.float32, shape=[None, self.out_op.shape[1].value])
+        self.reward_holders = tf.placeholder(tf.float32, shape=[None])
         
-        self.log_probs = tf.log(self.out_op)
+        self.std = tf.Variable(0.5 * np.ones(shape=self.out_op.shape[1].value), dtype=tf.float32)
+        self.out_act = self.out_op + tf.random_normal(tf.shape(self.out_op), dtype=tf.float32) * self.std
         
-        self.act_means = tf.reduce_mean(self.log_probs, axis=1)
-        self.loss = -tf.reduce_mean(self.act_means * self.reward_holders)
+        self.log_probs = gaussian_likelihood(self.act_holders, self.out_op, self.std)
+        
+        self.loss = -tf.reduce_mean(self.log_probs * self.reward_holders)
         
         self.optimizer = optimizer
         self.update = self.optimizer.minimize(self.loss)
         
         update_func = lambda train_data: self.sess.run(self.update, 
                                                        feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                                            self.act_holders: reshape_train_var(train_data[:, 1]), # vstack
+                                                            self.act_holders: reshape_train_var(train_data[:, 1]),
                                                             self.reward_holders: train_data[:, 2]})
         
         self.sess.run(tf.global_variables_initializer())
@@ -99,10 +101,7 @@ class VPGTrainer():
         return act
     
     def _gen_continuous_act(self, obs):
-        act_vect = self.sess.run(self.out_op, feed_dict={self.in_op: [obs]})[0]
-        
-        # TODO: Add gaussian noise to action vector
-        act_vect = [a + np.random.normal(0., 0.1) for a in act_vect]
+        act_vect = self.sess.run(self.out_act, feed_dict={self.in_op: [obs]})[0]
         
         return np.array(act_vect)
         

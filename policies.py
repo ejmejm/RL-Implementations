@@ -221,7 +221,7 @@ class VAPGTrainer():
         
     def _gen_discrete_act(self, obs):
         act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: [obs]})
-        act = np.random.choice(list(range(len(act_probs)+1)), p=act_probs[0])
+        act = np.random.choice(list(range(len(act_probs[0]))), p=act_probs)
         
         return act
     
@@ -400,7 +400,7 @@ class PPOTrainer():
         
     def _gen_discrete_act(self, obs):
         act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: [obs]})
-        act = np.random.choice(list(range(len(act_probs)+1)), p=act_probs[0])
+        act = np.random.choice(list(range(len(act_probs[0]))), p=act_probs[0])
         
         return act
     

@@ -47,10 +47,10 @@ class VPGTrainer():
         """
         Creates a function for vanilla policy training with a discrete action space
         """
-        self.act_holders = tf.placeholder(tf.int64, shape=[None])
-        self.reward_holders = tf.placeholder(tf.float64, shape=[None])
+        self.act_holders = tf.placeholder(tf.int32, shape=[None])
+        self.reward_holders = tf.placeholder(tf.float32, shape=[None])
         
-        self.act_masks = tf.one_hot(self.act_holders, self.out_op.shape[1].value, dtype=tf.float64)
+        self.act_masks = tf.one_hot(self.act_holders, self.out_op.shape[1].value, dtype=tf.float32)
         self.log_probs = tf.log(self.out_op)
         
         self.resp_acts = tf.reduce_sum(self.act_masks *  self.log_probs, axis=1)

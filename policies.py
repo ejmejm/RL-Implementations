@@ -160,13 +160,13 @@ class VAPGTrainer():
         """
         Creates a function for vanilla policy training with a discrete action space
         """
-        self.act_holders = tf.placeholder(tf.int64, shape=[None])
-        self.reward_holders = tf.placeholder(tf.float64, shape=[None])
+        self.act_holders = tf.placeholder(tf.int32, shape=[None])
+        self.reward_holders = tf.placeholder(tf.float32, shape=[None])
         
-        self.act_masks = tf.one_hot(self.act_holders, self.out_op.shape[1].value, dtype=tf.float64)
+        self.act_masks = tf.one_hot(self.act_holders, self.out_op.shape[1].value, dtype=tf.float32)
         self.log_probs = tf.log(self.out_op)
         
-        self.advantages = self.v_out_op - self.reward_holders
+        self.advantages = self.reward_holders - self.v_out_op
         
         self.resp_acts = tf.reduce_sum(self.act_masks *  self.log_probs, axis=1)
         self.loss = -tf.reduce_mean(self.resp_acts * self.advantages)
@@ -175,7 +175,7 @@ class VAPGTrainer():
         self.actor_update = self.optimizer.minimize(self.loss)
         
         with tf.control_dependencies([self.actor_update]):
-            self.value_loss = tf.reduce_mean(tf.square(self.v_out_op - self.reward_holders))
+            self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.v_out_op))
             self.value_update = self.optimizer.minimize(self.value_loss)
         
         update_func = lambda train_data: self.sess.run([self.actor_update, self.value_update], 
@@ -191,20 +191,28 @@ class VAPGTrainer():
         """
         Creates a function for vanilla policy training with a continuous action space
         """
-        self.act_holders = tf.placeholder(tf.float64, shape=[None, self.out_op.shape[1].value])
-        self.reward_holders = tf.placeholder(tf.float64, shape=[None])
+        self.act_holders = tf.placeholder(tf.float32, shape=[None, self.out_op.shape[1].value])
+        self.reward_holders = tf.placeholder(tf.float32, shape=[None])
         
-        self.log_probs = tf.log(self.out_op)
+        self.std = tf.Variable(0.5 * np.ones(shape=self.out_op.shape[1].value), dtype=tf.float32)
+        self.out_act = self.out_op + tf.random_normal(tf.shape(self.out_op), dtype=tf.float32) * self.std
         
-        self.act_means = tf.reduce_mean(self.log_probs, axis=1)
-        self.loss = -tf.reduce_mean(self.act_means * self.reward_holders)
+        self.log_probs = gaussian_likelihood(self.act_holders, self.out_op, self.std)
+        
+        self.advantages = self.reward_holders - self.v_out_op
+        
+        self.actor_loss = -tf.reduce_mean(self.log_probs * self.reward_holders)
         
         self.optimizer = optimizer
-        self.update = self.optimizer.minimize(self.loss)
+        self.actor_update = self.optimizer.minimize(self.actor_loss)
         
-        update_func = lambda train_data: self.sess.run(self.update, 
+        with tf.control_dependencies([self.actor_update]):
+            self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.v_out_op))
+            self.value_update = self.optimizer.minimize(self.value_loss)
+        
+        update_func = lambda train_data: self.sess.run([self.actor_update, self.value_update], 
                                                        feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                                            self.act_holders: reshape_train_var(train_data[:, 1]), # vstack
+                                                            self.act_holders: reshape_train_var(train_data[:, 1]),
                                                             self.reward_holders: train_data[:, 2]})
         
         self.sess.run(tf.global_variables_initializer())
@@ -212,16 +220,13 @@ class VAPGTrainer():
         return update_func
         
     def _gen_discrete_act(self, obs):
-        act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: obs})
+        act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: [obs]})
         act = np.random.choice(list(range(len(act_probs)+1)), p=act_probs[0])
         
         return act
     
     def _gen_continuous_act(self, obs):
-        act_vect = self.sess.run(self.out_op, feed_dict={self.in_op: obs})[0]
-        
-        # TODO: Add gaussian noise to action vector
-        act_vect = [a + np.random.normal(0., 0.1) for a in act_vect]
+        act_vect = self.sess.run(self.out_act, feed_dict={self.in_op: [obs]})[0]
         
         return np.array(act_vect)
         

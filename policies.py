@@ -175,7 +175,7 @@ class VAPGTrainer():
         self.actor_update = self.optimizer.minimize(self.loss)
         
         with tf.control_dependencies([self.actor_update]):
-            self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.v_out_op))
+            self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - tf.squeeze(self.v_out_op)))
             self.value_update = self.optimizer.minimize(self.value_loss)
         
         update_func = lambda train_data: self.sess.run([self.actor_update, self.value_update], 
@@ -207,7 +207,7 @@ class VAPGTrainer():
         self.actor_update = self.optimizer.minimize(self.actor_loss)
         
         with tf.control_dependencies([self.actor_update]):
-            self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.v_out_op))
+            self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - tf.squeeze(self.v_out_op)))
             self.value_update = self.optimizer.minimize(self.value_loss)
         
         update_func = lambda train_data: self.sess.run([self.actor_update, self.value_update], 
@@ -321,7 +321,7 @@ class PPOTrainer():
 
         # Value update
         
-        self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.value_out_op))
+        self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - tf.squeeze(self.value_out_op)))
         self.value_update = self.optimizer.minimize(self.value_loss)
         
         def update_func(train_data):
@@ -354,43 +354,56 @@ class PPOTrainer():
         """
         # First passthrough
         
-        self.reward_holders = tf.placeholder(tf.float64, shape=[None])
+        self.act_holders = tf.placeholder(tf.float32, shape=[None, self.out_op.shape[1].value])
+        self.reward_holders = tf.placeholder(tf.float32, shape=[None])
         
-        self.advantages = self.value_out_op - self.reward_holders
+        self.std = tf.Variable(0.5 * np.ones(shape=self.out_op.shape[1].value), dtype=tf.float32)
+        self.out_act = self.out_op + tf.random_normal(tf.shape(self.out_op), dtype=tf.float32) * self.std
+        
+        self.log_probs = gaussian_likelihood(self.act_holders, self.out_op, self.std)
+        
+        self.advantages = self.reward_holders - tf.squeeze(self.value_out_op)
         
         # Second passthrough
         
-        self.advatange_holders = tf.placeholder(dtype=tf.float64, shape=self.advantages.shape)
-        self.old_prob_holders = tf.placeholder(dtype=tf.float64, shape=self.out_op.shape)
-
-        self.policy_ratio = tf.reduce_mean(self.out_op / self.old_prob_holders, axis=1)
+        self.advatange_holders = tf.placeholder(dtype=tf.float32, shape=self.advantages.shape)
+        self.old_prob_holders = tf.placeholder(dtype=tf.float32, shape=self.log_probs.shape)
+ 
+        self.policy_ratio = tf.exp(self.log_probs - self.old_prob_holders)
         self.clipped_ratio = tf.clip_by_value(self.policy_ratio, 1 - self.clip_val, 1 + self.clip_val)
 
         self.min_loss = tf.minimum(self.policy_ratio * self.advatange_holders, self.clipped_ratio * self.advatange_holders)
-        self.actor_loss = tf.reduce_mean(self.min_loss)
+        
+        self.optimizer = tf.train.AdamOptimizer()
 
-        self.actor_optimizer = tf.train.AdamOptimizer(learning_rate=self.actor_lr)
-        self.actor_update = self.actor_optimizer.minimize(self.actor_loss)
+        # Actor update
+        
+        self.kl_divergence = tf.reduce_mean(self.old_prob_holders - self.log_probs)
+        self.actor_loss = -tf.reduce_mean(self.min_loss)
+        self.actor_update = self.optimizer.minimize(self.actor_loss)
 
         # Value update
         
-        self.value_optimizer = tf.train.AdamOptimizer(learning_rate=self.value_lr)
-        self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.value_out_op))
-        self.value_update = self.value_optimizer.minimize(self.value_loss)
+        self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - tf.squeeze(self.value_out_op)))
+        self.value_update = self.optimizer.minimize(self.value_loss)
         
         def update_func(train_data):
-            self.old_probs, self.old_advantages = self.sess.run([self.out_op, self.advantages], 
+            self.old_probs, self.old_advantages = self.sess.run([self.log_probs, self.advantages], 
                                     feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                               self.act_holders: reshape_train_var(train_data[:, 1]),
                                                self.reward_holders: train_data[:, 2]})
             
             for i in range(self.ppo_iters):
-                self.sess.run([self.actor_update], 
+                kl_div, _ = self.sess.run([self.kl_divergence, self.actor_update], 
                                feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                    self.act_holders: reshape_train_var(train_data[:, 1]),
                                     self.old_prob_holders: self.old_probs,
                                     self.advatange_holders: self.old_advantages})
+                if kl_div > 1.5 * self.target_kl:
+                    break
             
             for i in range(self.v_iters):
-                self.sess.run([self.value_update], 
+                self.sess.run(self.value_update, 
                            feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
                                       self.reward_holders: train_data[:, 2]})
 
@@ -400,15 +413,12 @@ class PPOTrainer():
         
     def _gen_discrete_act(self, obs):
         act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: [obs]})
-        act = np.random.choice(list(range(len(act_probs[0]))), p=act_probs[0])
+        act = np.random.choice(list(range(len(act_probs)+1)), p=act_probs[0])
         
         return act
     
     def _gen_continuous_act(self, obs):
-        act_vect = self.sess.run(self.out_op, feed_dict={self.in_op: obs})[0]
-        
-        # TODO: Add gaussian noise t128o action vector
-        act_vect = [a + np.random.normal(0., 0.1) for a in act_vect]
+        act_vect = self.sess.run(self.out_act, feed_dict={self.in_op: [obs]})[0]
         
         return np.array(act_vect)
         

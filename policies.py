@@ -240,7 +240,8 @@ class VAPGTrainer():
         raise RuntimeError('The train method was not properly created')
         
 class PPOTrainer():
-    def __init__(self, in_op, out_op, value_out_op, act_type='discrete', sess=None):
+    def __init__(self, in_op, out_op, value_out_op, act_type='discrete', sess=None, clip_val=0.2, ppo_iters=80,
+                 v_iters=30, target_kl=0.01):
         """
         Create a wrapper for RL networks for easy training.
         Args:
@@ -259,6 +260,10 @@ class PPOTrainer():
         self.out_op = out_op
         self.value_out_op = value_out_op
         self._prev_weights = None
+        self.clip_val = clip_val
+        self.ppo_iters = ppo_iters
+        self.v_iters = v_iters
+        self.target_kl = target_kl
         
         if act_type in ('discrete', 'd'):
             self.train = self._create_discrete_trainer()
@@ -286,60 +291,115 @@ class PPOTrainer():
         """
         Creates a function for vanilla policy training with a discrete action space
         """
-        self.act_holders = tf.placeholder(tf.int64, shape=[None])
-        self.reward_holders = tf.placeholder(tf.float64, shape=[None])
+        # First passthrough
         
-        self.act_masks = tf.one_hot(self.act_holders, self.out_op.shape[1].value, dtype=tf.float64)
-        self.log_probs = tf.log(self.out_op)
+        self.act_holders = tf.placeholder(tf.int32, shape=[None])
+        self.reward_holders = tf.placeholder(tf.float32, shape=[None])
         
-        self.resp_acts = tf.reduce_sum(self.act_masks *  self.log_probs, axis=1)
-        self.actor_loss = -tf.reduce_mean(self.resp_acts * self.reward_holders)
+        self.act_masks = tf.one_hot(self.act_holders, self.out_op.shape[1].value, dtype=tf.float32)
+        self.resp_acts = tf.reduce_sum(self.act_masks *  self.out_op, axis=1)
         
-        self.value_loss = tf.reduce_mean(tf.math.square(self.rewards_holders - self.value_out_op))
+        self.advantages = self.reward_holders - tf.squeeze(self.value_out_op)
         
-        self.optimizer = optimizer
+        # Second passthrough
+        
+        self.advatange_holders = tf.placeholder(dtype=tf.float32, shape=self.advantages.shape)
+        self.old_prob_holders = tf.placeholder(dtype=tf.float32, shape=self.resp_acts.shape)
+ 
+        self.policy_ratio = self.resp_acts / self.old_prob_holders
+        self.clipped_ratio = tf.clip_by_value(self.policy_ratio, 1 - self.clip_val, 1 + self.clip_val)
+
+        self.min_loss = tf.minimum(self.policy_ratio * self.advatange_holders, self.clipped_ratio * self.advatange_holders)
+        
+        self.optimizer = tf.train.AdamOptimizer()
+
+        # Actor update
+        
+        self.kl_divergence = tf.reduce_mean(tf.log(self.old_prob_holders) - tf.log(self.resp_acts))
+        self.actor_loss = -tf.reduce_mean(self.min_loss)
         self.actor_update = self.optimizer.minimize(self.actor_loss)
+
+        # Value update
+        
+        self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.value_out_op))
         self.value_update = self.optimizer.minimize(self.value_loss)
         
-        update_func = lambda train_data: self.sess.run([self.actor_update, self.value_update], 
-                                                       feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                                            self.act_holders: reshape_train_var(train_data[:, 1]),
-                                                            self.reward_holders: train_data[:, 2]})
-        
+        def update_func(train_data):
+            self.old_probs, self.old_advantages = self.sess.run([self.resp_acts, self.advantages], 
+                                    feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                               self.act_holders: train_data[:, 1],
+                                               self.reward_holders: train_data[:, 2]})
+            
+            for i in range(self.ppo_iters):
+                kl_div, _ = self.sess.run([self.kl_divergence, self.actor_update], 
+                               feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                    self.act_holders: train_data[:, 1],
+                                    self.old_prob_holders: self.old_probs,
+                                    self.advatange_holders: self.old_advantages})
+                if kl_div > 1.5 * self.target_kl:
+                    break
+            
+            for i in range(self.v_iters):
+                self.sess.run(self.value_update, 
+                           feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                      self.reward_holders: train_data[:, 2]})
+
         self.sess.run(tf.global_variables_initializer())
-        self._prev_weights = tf.trainabale_variables()
         
         return update_func
         
-    def _create_continuous_trainer(self, optimizer=tf.train.AdamOptimizer()):
+    def _create_continuous_trainer(self):
         """
         Creates a function for vanilla policy training with a continuous action space
         """
-        self.act_holders = tf.placeholder(tf.float64, shape=[None, self.out_op.shape[1].value])
+        # First passthrough
+        
         self.reward_holders = tf.placeholder(tf.float64, shape=[None])
         
-        self.log_probs = tf.log(self.out_op)
+        self.advantages = self.value_out_op - self.reward_holders
         
-        self.act_means = tf.reduce_mean(self.log_probs, axis=1)
-        self.actor_loss = -tf.reduce_mean(self.act_means * self.reward_holders)
+        # Second passthrough
         
-        self.value_loss = tf.reduce_mean(tf.math.square(self.rewards_holders - self.value_out_op))
+        self.advatange_holders = tf.placeholder(dtype=tf.float64, shape=self.advantages.shape)
+        self.old_prob_holders = tf.placeholder(dtype=tf.float64, shape=self.out_op.shape)
+
+        self.policy_ratio = tf.reduce_mean(self.out_op / self.old_prob_holders, axis=1)
+        self.clipped_ratio = tf.clip_by_value(self.policy_ratio, 1 - self.clip_val, 1 + self.clip_val)
+
+        self.min_loss = tf.minimum(self.policy_ratio * self.advatange_holders, self.clipped_ratio * self.advatange_holders)
+        self.actor_loss = tf.reduce_mean(self.min_loss)
+
+        self.actor_optimizer = tf.train.AdamOptimizer(learning_rate=self.actor_lr)
+        self.actor_update = self.actor_optimizer.minimize(self.actor_loss)
+
+        # Value update
         
-        self.optimizer = optimizer
-        self.actor_update = self.optimizer.minimize(self.actor_loss)
-        self.value_update = self.optimizer.minimize(self.value_loss)
+        self.value_optimizer = tf.train.AdamOptimizer(learning_rate=self.value_lr)
+        self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - self.value_out_op))
+        self.value_update = self.value_optimizer.minimize(self.value_loss)
         
-        update_func = lambda train_data: self.sess.run([self.actor_update, self.value_update], 
-                                                       feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                                            self.act_holders: reshape_train_var(train_data[:, 1]), # vstack
-                                                            self.reward_holders: train_data[:, 2]})
-        
+        def update_func(train_data):
+            self.old_probs, self.old_advantages = self.sess.run([self.out_op, self.advantages], 
+                                    feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                               self.reward_holders: train_data[:, 2]})
+            
+            for i in range(self.ppo_iters):
+                self.sess.run([self.actor_update], 
+                               feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                    self.old_prob_holders: self.old_probs,
+                                    self.advatange_holders: self.old_advantages})
+            
+            for i in range(self.v_iters):
+                self.sess.run([self.value_update], 
+                           feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
+                                      self.reward_holders: train_data[:, 2]})
+
         self.sess.run(tf.global_variables_initializer())
         
         return update_func
         
     def _gen_discrete_act(self, obs):
-        act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: obs})
+        act_probs = self.sess.run(self.out_op, feed_dict={self.in_op: [obs]})
         act = np.random.choice(list(range(len(act_probs)+1)), p=act_probs[0])
         
         return act
@@ -347,7 +407,7 @@ class PPOTrainer():
     def _gen_continuous_act(self, obs):
         act_vect = self.sess.run(self.out_op, feed_dict={self.in_op: obs})[0]
         
-        # TODO: Add gaussian noise to action vector
+        # TODO: Add gaussian noise t128o action vector
         act_vect = [a + np.random.normal(0., 0.1) for a in act_vect]
         
         return np.array(act_vect)

@@ -4,10 +4,16 @@ import threading
 import multiprocessing
 
 class MemoryBuffer():
-    def __init__(self, max_size=1e6):
+    def __init__(self, incl_next_state=False, max_size=1e6):
         self.max_size = int(max_size)
         self.rollouts = []
         self.rollout_idx = -1
+        if incl_next_state:
+            self.n_vars = 4
+            self.record = self._record_4_vars
+        else:
+            self.n_vars = 3
+            self.record = self._record_3_vars
     
     def start_rollout(self):
         self.rollout_idx = (self.rollout_idx + 1) % self.max_size
@@ -19,8 +25,11 @@ class MemoryBuffer():
     def end_rollout(self):
         self.start_rollout()
     
-    def record(self, obs, act, rew):
+    def _record_3_vars(self, obs, act, rew):
         self.rollouts[self.rollout_idx].append([obs, act, rew])
+    
+    def _record_4_vars(self, obs, act, rew, obs_next):
+        self.rollouts[self.rollout_idx].append([obs, act, rew, obs_next])
         
     def to_data(self, reset=True):
         all_data = []

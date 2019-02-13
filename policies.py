@@ -199,9 +199,9 @@ class VAPGTrainer():
         
         self.log_probs = gaussian_likelihood(self.act_holders, self.out_op, self.std)
         
-        self.advantages = self.reward_holders - self.v_out_op
+        self.advantages = self.reward_holders - tf.squeeze(self.v_out_op)
         
-        self.actor_loss = -tf.reduce_mean(self.log_probs * self.reward_holders)
+        self.actor_loss = -tf.reduce_mean(self.log_probs * self.advantages)
         
         self.optimizer = optimizer
         self.actor_update = self.optimizer.minimize(self.actor_loss)

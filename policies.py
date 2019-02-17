@@ -241,7 +241,7 @@ class VAPGTrainer():
         
 class PPOTrainer():
     def __init__(self, in_op, out_op, value_out_op, act_type='discrete', sess=None, clip_val=0.2, ppo_iters=80,
-                 v_iters=30, target_kl=0.01):
+                 target_kl=0.01, v_coef=1., entropy_coef=0.01):
         """
         Create a wrapper for RL networks for easy training.
         Args:
@@ -262,8 +262,9 @@ class PPOTrainer():
         self._prev_weights = None
         self.clip_val = clip_val
         self.ppo_iters = ppo_iters
-        self.v_iters = v_iters
         self.target_kl = target_kl
+        self.v_coef = v_coef
+        self.entropy_coef = entropy_coef
         
         if act_type in ('discrete', 'd'):
             self.train = self._create_discrete_trainer()
@@ -324,25 +325,27 @@ class PPOTrainer():
         self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - tf.squeeze(self.value_out_op)))
         self.value_update = self.optimizer.minimize(self.value_loss)
         
+        # Combined update
+        
+        self.entropy = -tf.reduce_mean(tf.reduce_sum(self.out_op * tf.log(1. / self.out_op), axis=1))
+        self.combined_loss = self.actor_loss + self.v_coef * self.value_loss + self.entropy_coef * self.entropy
+        self.combined_update = self.optimizer.minimize(self.combined_loss)
+        
         def update_func(train_data):
             self.old_probs, self.old_advantages = self.sess.run([self.resp_acts, self.advantages], 
                                     feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
                                                self.act_holders: train_data[:, 1],
                                                self.reward_holders: train_data[:, 2]})
-            
+        
             for i in range(self.ppo_iters):
-                kl_div, _ = self.sess.run([self.kl_divergence, self.actor_update], 
+                kl_div, _ = self.sess.run([self.kl_divergence, self.combined_update], 
                                feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                    self.act_holders: train_data[:, 1],
+                                    self.act_holders: reshape_train_var(train_data[:, 1]),
+                                    self.reward_holders: train_data[:, 2],
                                     self.old_prob_holders: self.old_probs,
                                     self.advatange_holders: self.old_advantages})
                 if kl_div > 1.5 * self.target_kl:
                     break
-            
-            for i in range(self.v_iters):
-                self.sess.run(self.value_update, 
-                           feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                      self.reward_holders: train_data[:, 2]})
 
         self.sess.run(tf.global_variables_initializer())
         
@@ -387,6 +390,12 @@ class PPOTrainer():
         self.value_loss = tf.reduce_mean(tf.square(self.reward_holders - tf.squeeze(self.value_out_op)))
         self.value_update = self.optimizer.minimize(self.value_loss)
         
+        # Combined update
+        
+        self.entropy = -0.5 * tf.reduce_mean(tf.log(2 * np.pi * np.e * self.std))
+        self.combined_loss = self.actor_loss + self.v_coef * self.value_loss + self.entropy_coef * self.entropy
+        self.combined_update = self.optimizer.minimize(self.combined_loss)
+        
         def update_func(train_data):
             self.old_probs, self.old_advantages = self.sess.run([self.log_probs, self.advantages], 
                                     feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
@@ -394,18 +403,16 @@ class PPOTrainer():
                                                self.reward_holders: train_data[:, 2]})
             
             for i in range(self.ppo_iters):
-                kl_div, _ = self.sess.run([self.kl_divergence, self.actor_update], 
+                kl_div, _ = self.sess.run([self.kl_divergence, self.combined_update], 
                                feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
                                     self.act_holders: reshape_train_var(train_data[:, 1]),
+                                    self.reward_holders: train_data[:, 2],
                                     self.old_prob_holders: self.old_probs,
                                     self.advatange_holders: self.old_advantages})
                 if kl_div > 1.5 * self.target_kl:
                     break
             
-            for i in range(self.v_iters):
-                self.sess.run(self.value_update, 
-                           feed_dict={self.in_op: reshape_train_var(train_data[:, 0]),
-                                      self.reward_holders: train_data[:, 2]})
+            return kl_div, self.sess.run(self.entropy)
 
         self.sess.run(tf.global_variables_initializer())
         

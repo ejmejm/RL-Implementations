@@ -29,7 +29,7 @@ def resize_img(img, size=(64, 64)):
 def scale_color(img, max_val=255.):
     return img / max_val
 
-def preprocess_atari(obs, size=(64, 64)):
+def preprocess_atari(obs, size=(84, 84)):
     gray = to_grayscale(obs)
     resized = resize_img(gray, size)
     return scale_color(resized)

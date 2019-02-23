@@ -307,7 +307,7 @@ class PPOTrainer():
         self.advatange_holders = tf.placeholder(dtype=tf.float32, shape=self.advantages.shape)
         self.old_prob_holders = tf.placeholder(dtype=tf.float32, shape=self.resp_acts.shape)
  
-        self.policy_ratio = self.resp_acts / self.old_prob_holders
+        self.policy_ratio = self.resp_acts / (self.old_prob_holders + 1e-8)
         self.clipped_ratio = tf.clip_by_value(self.policy_ratio, 1 - self.clip_val, 1 + self.clip_val)
 
         self.min_loss = tf.minimum(self.policy_ratio * self.advatange_holders, self.clipped_ratio * self.advatange_holders)

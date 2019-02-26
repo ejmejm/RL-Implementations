@@ -1,0 +1,694 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ludus package &mdash; ludus v0.1-a1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ludus
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">ludus package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ludus.cart_pole_cont">ludus.cart_pole_cont module</a></li>
+<li><a class="reference internal" href="#module-ludus.env">ludus.env module</a></li>
+<li><a class="reference internal" href="#module-ludus.memory">ludus.memory module</a></li>
+<li><a class="reference internal" href="#module-ludus.policies">ludus.policies module</a></li>
+<li><a class="reference internal" href="#module-ludus.utils">ludus.utils module</a></li>
+<li><a class="reference internal" href="#module-ludus">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ludus</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>ludus package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/rst/ludus.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ludus-package">
+<h1>ludus package<a class="headerlink" href="#ludus-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ludus.cart_pole_cont">
+<span id="ludus-cart-pole-cont-module"></span><h2>ludus.cart_pole_cont module<a class="headerlink" href="#module-ludus.cart_pole_cont" title="Permalink to this headline">¶</a></h2>
+<p>Classic cart-pole system implemented by Rich Sutton et al.
+Copied from <a class="reference external" href="http://incompleteideas.net/sutton/book/code/pole.c">http://incompleteideas.net/sutton/book/code/pole.c</a>
+permalink: <a class="reference external" href="https://perma.cc/C9ZM-652R">https://perma.cc/C9ZM-652R</a></p>
+<p>continuous version adapted by Edan Meyer</p>
+<dl class="class">
+<dt id="ludus.cart_pole_cont.CartPoleEnv">
+<em class="property">class </em><code class="descclassname">ludus.cart_pole_cont.</code><code class="descname">CartPoleEnv</code><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
+<dl class="method">
+<dt id="ludus.cart_pole_cont.CartPoleEnv.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override _close in your subclass to perform any necessary cleanup.</p>
+<p>Environments will automatically close() themselves when
+garbage collected or when the program exits.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ludus.cart_pole_cont.CartPoleEnv.metadata">
+<code class="descname">metadata</code><em class="property"> = {'render.modes': ['human', 'rgb_array'], 'video.frames_per_second': 50}</em><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv.metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.cart_pole_cont.CartPoleEnv.render">
+<code class="descname">render</code><span class="sig-paren">(</span><em>mode='human'</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the environment.</p>
+<p>The set of supported modes varies per environment. (And some
+environments do not support rendering at all.) By convention,
+if mode is:</p>
+<ul class="simple">
+<li><p>human: render to the current display or terminal and
+return nothing. Usually for human consumption.</p></li>
+<li><p>rgb_array: Return an numpy.ndarray with shape (x, y, 3),
+representing RGB values for an x-by-y pixel image, suitable
+for turning into a video.</p></li>
+<li><p>ansi: Return a string (str) or StringIO.StringIO containing a
+terminal-style text representation. The text can include newlines
+and ANSI escape sequences (e.g. for colors).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>Make sure that your class’s metadata ‘render.modes’ key includes</dt><dd><p>the list of supported modes. It’s recommended to call super()
+in implementations to use the functionality of this method.</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>str</em>) – the mode to render with</p></li>
+<li><p><strong>close</strong> (<em>bool</em>) – close all open renderings</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<dl>
+<dt>class MyEnv(Env):</dt><dd><p>metadata = {‘render.modes’: [‘human’, ‘rgb_array’]}</p>
+<dl class="simple">
+<dt>def render(self, mode=’human’):</dt><dd><dl class="simple">
+<dt>if mode == ‘rgb_array’:</dt><dd><p>return np.array(…) # return RGB frame suitable for video</p>
+</dd>
+<dt>elif mode is ‘human’:</dt><dd><p>… # pop up a window and render</p>
+</dd>
+<dt>else:</dt><dd><p>super(MyEnv, self).render(mode=mode) # just raise an exception</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.cart_pole_cont.CartPoleEnv.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the state of the environment and returns an initial observation.</p>
+<dl class="simple">
+<dt>Returns: observation (object): the initial observation of the</dt><dd><p>space.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.cart_pole_cont.CartPoleEnv.seed">
+<code class="descname">seed</code><span class="sig-paren">(</span><em>seed=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv.seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the seed for this env’s random number generator(s).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some environments use multiple pseudorandom number generators.
+We want to capture all such seeds used in order to ensure that
+there aren’t accidental correlations between multiple generators.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Returns the list of seeds used in this env’s random</dt><dd><p>number generators. The first value in the list should be the
+“main” seed, or the value which a reproducer should pass to
+‘seed’. Often, the main seed equals the provided ‘seed’, but
+this won’t be true if seed=None, for example.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list&lt;bigint&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.cart_pole_cont.CartPoleEnv.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.cart_pole_cont.CartPoleEnv.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run one timestep of the environment’s dynamics. When end of
+episode is reached, you are responsible for calling <cite>reset()</cite>
+to reset this environment’s state.</p>
+<p>Accepts an action and returns a tuple (observation, reward, done, info).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>object</em>) – an action provided by the environment</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>agent’s observation of the current environment
+reward (float) : amount of reward returned after previous action
+done (boolean): whether the episode has ended, in which case further step() calls will return undefined results
+info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>observation (object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ludus.env">
+<span id="ludus-env-module"></span><h2>ludus.env module<a class="headerlink" href="#module-ludus.env" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ludus.env.EnvController">
+<em class="property">class </em><code class="descclassname">ludus.env.</code><code class="descname">EnvController</code><span class="sig-paren">(</span><em>make_env</em>, <em>n_threads=1</em>, <em>memory_buffer=&lt;ludus.memory.MTMemoryBuffer object&gt;</em>, <em>obs_transform=None</em>, <em>act_transform=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The EnvController is used to keep track of the environment being used,
+and also the game loop.</p>
+<p>It implements Python’s multithreading module to run several game loops in
+parallel and efficiently generate data.</p>
+<dl class="method">
+<dt id="ludus.env.EnvController.act_transform">
+<code class="descname">act_transform</code><span class="sig-paren">(</span><em>act</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.act_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the stored action transformation function to transform the given action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>act</strong> – Action chosen by the agent.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Action after formated by the instance’s act transformation function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.get_avg_reward">
+<code class="descname">get_avg_reward</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.get_avg_reward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.obs_transform">
+<code class="descname">obs_transform</code><span class="sig-paren">(</span><em>obs</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.obs_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the stored observation transformation function to transform the given observation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obs</strong> – Observation from the environment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Observation after formated by the instance’s obs transformation function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.render_episodes">
+<code class="descname">render_episodes</code><span class="sig-paren">(</span><em>network</em>, <em>n_episodes=1</em>, <em>max_steps=200</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.render_episodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.set_act_transform">
+<code class="descname">set_act_transform</code><span class="sig-paren">(</span><em>transform_func</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.set_act_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the action transformation function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transform_func</strong> – Function that is applied to every action from the environment
+before the actions are recorded and used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.set_obs_transform">
+<code class="descname">set_obs_transform</code><span class="sig-paren">(</span><em>transform_func</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.set_obs_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the observation transformation function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transform_func</strong> – Function that is applied to every observation from the environment
+before the observations are recorded and used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.sim_episodes">
+<code class="descname">sim_episodes</code><span class="sig-paren">(</span><em>network</em>, <em>n_episodes=1</em>, <em>max_steps=200</em>, <em>render=False</em>, <em>return_data=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.sim_episodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.env.EnvController.sim_thread">
+<code class="descname">sim_thread</code><span class="sig-paren">(</span><em>agent_id</em>, <em>network</em>, <em>n_episodes=1</em>, <em>max_steps=200</em>, <em>render=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.EnvController.sim_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Playthrough episodes of the instance’s environment, collecting data in the memory
+buffer that can be used for training or other purposes. The data from the memory buffer
+is not extracted until a call to the ‘get_data’ method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_id</strong> (<em>int</em>) – ID of the thread running these episodes, used in the memory
+buffer. Should be unique from any other agent IDs being used by any other
+workers running in parallel. Failure to keep the ID unique for the timeframe
+will result in incorrect discounted rewards in the final data, as well as
+out of order data.</p></li>
+<li><p><strong>network</strong> – Trainer that extends ludus.policies.BaseTrainer. The network is used
+to generate actions at each step in the environment.</p></li>
+<li><p><strong>n_episodes</strong> (<em>int</em>) – The number of rollouts to generate.</p></li>
+<li><p><strong>max_steps</strong> (<em>int</em>) – Max number of steps that should be taken in a single rollout.
+Generally equivelant to the max number of frames before cutting off an episode.</p></li>
+<li><p><strong>render</strong> (<em>boolean</em>) – True to render the playthroughs, False to run with no UI. All
+traing should be done without rendering for significantly faster speeds.
+Rendering for the purpose of tracking progress or curiosity should ideally be
+done with the ‘render_episodes’ method.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.env.make_car_race">
+<code class="descclassname">ludus.env.</code><code class="descname">make_car_race</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.make_car_race" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make and return a continuous cart car race environment from OpenAI gym</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.env.make_cart_pole">
+<code class="descclassname">ludus.env.</code><code class="descname">make_cart_pole</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.make_cart_pole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make and return a discrete cart pole environment from OpenAI gym</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.env.make_cart_pole_c">
+<code class="descclassname">ludus.env.</code><code class="descname">make_cart_pole_c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.make_cart_pole_c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make and return a continuous cart pole environment adapted from OpenAI gym</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.env.make_lunar_lander_c">
+<code class="descclassname">ludus.env.</code><code class="descname">make_lunar_lander_c</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.make_lunar_lander_c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make and return a continuous lunar lander environment from OpenAI gym</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.env.make_lunar_lander_d">
+<code class="descclassname">ludus.env.</code><code class="descname">make_lunar_lander_d</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.env.make_lunar_lander_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make and return a discrete lunar lander environment from OpenAI gym</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ludus.memory">
+<span id="ludus-memory-module"></span><h2>ludus.memory module<a class="headerlink" href="#module-ludus.memory" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ludus.memory.MTMemoryBuffer">
+<em class="property">class </em><code class="descclassname">ludus.memory.</code><code class="descname">MTMemoryBuffer</code><span class="sig-paren">(</span><em>incl_next_state=True</em>, <em>max_size=1000000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MTMemoryBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ludus.memory.MemoryBuffer" title="ludus.memory.MemoryBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ludus.memory.MemoryBuffer</span></code></a></p>
+<p>Multi-threading Memory Buffer</p>
+<dl class="method">
+<dt id="ludus.memory.MTMemoryBuffer.start_rollout">
+<code class="descname">start_rollout</code><span class="sig-paren">(</span><em>agent_id</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MTMemoryBuffer.start_rollout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ludus.memory.MemoryBuffer">
+<em class="property">class </em><code class="descclassname">ludus.memory.</code><code class="descname">MemoryBuffer</code><span class="sig-paren">(</span><em>incl_next_state=True</em>, <em>max_size=1000000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MemoryBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="ludus.memory.MemoryBuffer.end_rollout">
+<code class="descname">end_rollout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MemoryBuffer.end_rollout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.memory.MemoryBuffer.get_avg_reward">
+<code class="descname">get_avg_reward</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MemoryBuffer.get_avg_reward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.memory.MemoryBuffer.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MemoryBuffer.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.memory.MemoryBuffer.start_rollout">
+<code class="descname">start_rollout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MemoryBuffer.start_rollout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.memory.MemoryBuffer.to_data">
+<code class="descname">to_data</code><span class="sig-paren">(</span><em>reset=True</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.memory.MemoryBuffer.to_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ludus.policies">
+<span id="ludus-policies-module"></span><h2>ludus.policies module<a class="headerlink" href="#module-ludus.policies" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ludus.policies.BaseTrainer">
+<em class="property">class </em><code class="descclassname">ludus.policies.</code><code class="descname">BaseTrainer</code><span class="sig-paren">(</span><em>in_op</em>, <em>out_op</em>, <em>act_type='discrete'</em>, <em>sess=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.BaseTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="ludus.policies.BaseTrainer.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.BaseTrainer.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ends the internal Tensorflow session if it exists</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.policies.BaseTrainer.end_sess">
+<code class="descname">end_sess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.BaseTrainer.end_sess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ends the internal Tensorflow session if it exists</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.policies.BaseTrainer.gen_act">
+<code class="descname">gen_act</code><span class="sig-paren">(</span><em>obs</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.BaseTrainer.gen_act" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ludus.policies.BaseTrainer.renew_sess">
+<code class="descname">renew_sess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.BaseTrainer.renew_sess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a new internal Tensorflow session</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ludus.policies.BaseTrainer.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>obs</em>, <em>rewards</em>, <em>acts</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.BaseTrainer.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ludus.policies.PPOTrainer">
+<em class="property">class </em><code class="descclassname">ludus.policies.</code><code class="descname">PPOTrainer</code><span class="sig-paren">(</span><em>in_op</em>, <em>out_op</em>, <em>value_out_op</em>, <em>act_type='discrete'</em>, <em>sess=None</em>, <em>clip_val=0.2</em>, <em>ppo_iters=80</em>, <em>target_kl=0.01</em>, <em>v_coef=1.0</em>, <em>entropy_coef=0.01</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.PPOTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ludus.policies.BaseTrainer" title="ludus.policies.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ludus.policies.BaseTrainer</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ludus.policies.VAPGTrainer">
+<em class="property">class </em><code class="descclassname">ludus.policies.</code><code class="descname">VAPGTrainer</code><span class="sig-paren">(</span><em>in_op</em>, <em>out_op</em>, <em>v_out_op</em>, <em>act_type='discrete'</em>, <em>sess=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.VAPGTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ludus.policies.BaseTrainer" title="ludus.policies.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ludus.policies.BaseTrainer</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ludus.policies.VPGTrainer">
+<em class="property">class </em><code class="descclassname">ludus.policies.</code><code class="descname">VPGTrainer</code><span class="sig-paren">(</span><em>in_op</em>, <em>out_op</em>, <em>act_type='discrete'</em>, <em>sess=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.policies.VPGTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ludus.policies.BaseTrainer" title="ludus.policies.BaseTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ludus.policies.BaseTrainer</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ludus.utils">
+<span id="ludus-utils-module"></span><h2>ludus.utils module<a class="headerlink" href="#module-ludus.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ludus.utils.discount_rewards">
+<code class="descclassname">ludus.utils.</code><code class="descname">discount_rewards</code><span class="sig-paren">(</span><em>rewards</em>, <em>gamma=0.99</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.discount_rewards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discounts an array of rewarwds, generally used after
+an episode ends and before training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rewards</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of float) – The rewards to be discounted.</p></li>
+<li><p><strong>gamma</strong> (<em>float</em><em>, </em><em>optional</em>) – Gamma in the reward discount function.
+Higher gamma = higher importance on later rewards.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of the disounted rewards.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> of float)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">discount_rewards</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)])</span>
+<span class="go">    [5.92, 4.97, 3.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.utils.gaussian_likelihood">
+<code class="descclassname">ludus.utils.</code><code class="descname">gaussian_likelihood</code><span class="sig-paren">(</span><em>x</em>, <em>mu</em>, <em>std</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.gaussian_likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the log probability of a gaussian given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – 2D tensor for observations drawn from the gaussian distributions.</p></li>
+<li><p><strong>mu</strong> – 1D tensor for mean of the gaussian distributions.</p></li>
+<li><p><strong>std</strong> – Tensor scalar for standard deviation of the gaussian distributions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1D tensor with a length equal to the number of rows in x.
+Gives the gaussian likelihood for each x for the respective gaussian distribution.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">discount_rewards</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)])</span>
+<span class="go">    [5.92, 4.97, 3.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.utils.preprocess_atari">
+<code class="descclassname">ludus.utils.</code><code class="descname">preprocess_atari</code><span class="sig-paren">(</span><em>obs</em>, <em>size=(84</em>, <em>84)</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.preprocess_atari" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies grayscale, resize, and scale_color to one observation, returning the new img</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.utils.reshape_train_var">
+<code class="descclassname">ludus.utils.</code><code class="descname">reshape_train_var</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.reshape_train_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reshape a list in the form [num_samples, single_var_shape],
+so that it is ready for training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>var</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>) – A list of training data that has a length of the number of samples.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Same input data with shape, [num_samples, single_var_shape].</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<code class="xref py py-obj docutils literal notranslate"><span class="pre">np.array</span></code>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">reshape_train_var</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])]))</span>
+<span class="go">    [[1, 2, 3]</span>
+<span class="go">     [4, 5, 6]]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">reshape_train_var</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">    (2, 3)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.utils.resize_img">
+<code class="descclassname">ludus.utils.</code><code class="descname">resize_img</code><span class="sig-paren">(</span><em>img</em>, <em>size=(84</em>, <em>84)</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.resize_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize the img to the shape (size_1, size_2, 1)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.utils.scale_color">
+<code class="descclassname">ludus.utils.</code><code class="descname">scale_color</code><span class="sig-paren">(</span><em>img</em>, <em>max_val=255.0</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.scale_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scales an image of color values (int) [0,255] to (float) [0,1]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ludus.utils.to_grayscale">
+<code class="descclassname">ludus.utils.</code><code class="descname">to_grayscale</code><span class="sig-paren">(</span><em>img</em><span class="sig-paren">)</span><a class="headerlink" href="#ludus.utils.to_grayscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the grayscale of a numpy array with rgb channels</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ludus">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ludus" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Edan Meyer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

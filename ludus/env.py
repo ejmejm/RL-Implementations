@@ -1,7 +1,24 @@
 import numpy as np
-from memory import MTMemoryBuffer
 import threading
 import time
+import gym
+from ludus.cart_pole_cont import CartPoleEnv
+from ludus.memory import MTMemoryBuffer
+
+def make_cart_pole():
+    return gym.make('CartPole-v1')
+
+def make_cart_pole_c():
+    return CartPoleEnv()
+
+def make_car_race():
+    return gym.make('CarRacing-v0')
+
+def make_lunar_lander_d():
+    return gym.make('LunarLander-v2')
+
+def make_lunar_lander_c():
+    return gym.make('LunarLanderContinuous-v2')
 
 class EnvController():
     def __init__(self, make_env, n_threads=1, memory_buffer=MTMemoryBuffer(), 
@@ -25,7 +42,7 @@ class EnvController():
     def set_obs_transform(self, transform_func):
         self.obs_transform = transform_func
     
-    def set_act_transform(transform_func):
+    def set_act_transform(self, transform_func):
         self.act_transform = transform_func
         
     def sim_thread(self, agent_id, network, n_episodes=1, max_steps=200, render=False):

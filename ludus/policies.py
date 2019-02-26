@@ -1,6 +1,6 @@
 import tensorflow as tf
-from utils import reshape_train_var, gaussian_likelihood
 import numpy as np
+from ludus.utils import reshape_train_var, gaussian_likelihood
 
 class VPGTrainer():
     def __init__(self, in_op, out_op, act_type='discrete', sess=None):

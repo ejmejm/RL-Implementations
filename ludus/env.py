@@ -42,7 +42,7 @@ class EnvController():
     def set_obs_transform(self, transform_func):
         self.obs_transform = transform_func
     
-    def set_act_transform(transform_func):
+    def set_act_transform(self, transform_func):
         self.act_transform = transform_func
         
     def sim_thread(self, agent_id, network, n_episodes=1, max_steps=200, render=False):

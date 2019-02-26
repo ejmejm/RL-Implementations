@@ -48,13 +48,12 @@ class MemoryBuffer():
         return np.array(all_data)
                 
     def get_avg_reward(self):
-        total_reward = 0
+        all_rewards = []
         for rollout in self.rollouts:
             rollout = np.array(rollout)
             rewards = rollout[:,2]
-            total_reward += np.sum(rewards)
-            
-        return total_reward / len(self.rollouts)
+            all_rewards.append(np.sum(rewards))
+        return np.mean(all_rewards)
         
     def reset(self):
         self.rollouts = []
